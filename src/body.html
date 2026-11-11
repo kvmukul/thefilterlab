@@ -1,0 +1,38 @@
+<div class="top brand-hero"><div class="brand-lockup" aria-label="TheFilterLab"><div class="brand-title"><span class="brand-the">The</span><span class="brand-filter">Filter</span><span class="brand-lab">Lab</span></div><div class="brand-tagline">FILTER · ANALYSE · ENHANCE</div></div><button id="tg" class="tg" aria-label="Switch between light and dark mode" title="Light / dark"><svg viewBox="0 0 24 24" width="22" height="22"><defs><mask id="mk"><rect width="24" height="24" fill="#fff"/><circle class="cut" cx="24" cy="0" r="7" fill="#000"/></mask></defs><g mask="url(#mk)"><circle class="core" cx="12" cy="12" r="5" fill="currentColor"/></g><g class="rays" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></g></svg></button></div>
+<p class="sub">Work through four steps: pick an image, mark the part type and region, build your filters, then inspect the result.</p>
+<div class="card workspaceCard"><h2>Workspace overview</h2><div class="workspaceGrid"><div class="workspaceStat"><span>Source</span><b id="wsSource">Built-in sample</b></div><div class="workspaceStat"><span>Image size</span><b id="wsSize">—</b></div><div class="workspaceStat"><span>Region of interest</span><b id="wsRoi">Full image</b></div><div class="workspaceStat"><span>Pipeline</span><b id="wsPipe">0 filters</b></div></div><div class="workspaceTip" id="wsTip">Start by choosing a sample or uploading an image. Then mark a region and add filters in Step 3.</div></div>
+<div class="app">
+<div class="card stick imageWorkspace"><div class="g2">
+<div><h2>Original · <span class="mu" id="roiTxt"></span></h2><canvas id="c0" style="cursor:crosshair;touch-action:none"></canvas></div>
+<div><h2>Result</h2><canvas id="c1"></canvas></div></div><div class="cap" id="info"></div></div>
+<div class="stepsColumn">
+
+<div class="tabs" id="tabs"></div>
+<div class="card stp" data-s="0"><h2>Step 1 · Choose an image</h2>
+<div class="row"><select id="src"></select><button id="up">Upload image</button><input type="file" id="file" accept="image/*" hidden><button id="cam">Start webcam</button></div>
+<div class="row" style="margin-top:8px"><label class="mu">Working resolution (uploads &amp; webcam) <select id="res"><option value="400">Fast · 400 px</option><option value="800" selected>Standard · 800 px</option><option value="1280">Detailed · 1280 px</option></select></label></div>
+<p class="mu">Choose a built-in sample, upload an image, or connect a webcam. Input sensor noise is available in Step 3 for samples, uploads and webcam frames.</p>
+<div class="nav"><span></span><button class="p" data-go="1">Next →</button></div></div>
+<div class="card stp" data-s="1" hidden><h2>Step 2 · What are you detecting, and where?</h2>
+<select id="part" style="width:100%"></select><div id="rec" style="margin-top:8px"></div>
+<h2 style="margin-top:14px">Region of interest</h2>
+<p class="mu">Drag a box on the Original image. Filters then run only inside it. Click once to clear.</p>
+<div class="row"><button id="ctr">Centre box</button><button id="clrroi">Clear box</button><label class="row"><input type="checkbox" id="zoom"> Show only the box in Result</label></div>
+<div class="nav"><button data-go="0">← Back</button><button class="p" data-go="2">Next →</button></div></div>
+<div class="card stp" data-s="2" hidden><h2>Step 3 · Build your filter pipeline</h2>
+<div class="noisePanel"><div class="noiseHead"><div><b>Input sensor noise</b><div class="mu" id="noiseHelp">Simulate sensor noise on any selected image, including uploads and webcam frames.</div></div><strong id="noiseVal">0</strong></div><div class="sl"><span>Noise level</span><input type="range" id="noise" min="0" max="40" value="0" title="Adds simulated sensor noise to the current image"><span></span></div><div class="mu" id="noiseStatus">Noise is off. Increase the level to simulate sensor noise.</div></div>
+<div class="overview"><div class="catalogIntro"><b>Explore the filter library</b><span class="mu" id="filterCount"></span></div><p class="mu">Several categories are available. Each category explains what its filters do; expand one to see descriptions and add individual filters.</p></div>
+<div id="pipe"></div><div class="row"><button id="clr">Clear pipeline</button></div>
+<h2 style="margin-top:14px">Filter categories</h2>
+<div class="row" style="margin-bottom:8px"><input type="text" id="q" placeholder="Search categories or filters…" style="flex:1;min-width:140px"></div>
+<div class="sc catList" id="cl"></div>
+<div class="nav"><button data-go="1">← Back</button><button class="p" data-go="3">Next →</button></div></div>
+<div class="card stp" data-s="3" hidden><h2>Step 4 · Inspect and save</h2>
+<label class="row"><input type="checkbox" id="bl"> Count bright blobs ≥ <input type="number" id="minA" value="40" style="width:64px"> px</label>
+<div class="sl"><span>Before / after</span><input type="range" id="split" min="0" max="100" value="0"><span id="splitVal">off</span></div>
+<p class="mu">Slide (or drag on the Result image) to reveal the original on the left of a divider. Double-click the Result to turn it off.</p>
+<h2 style="margin-top:12px">Recipe (filters, region, noise &amp; view settings. Copy to save, paste and Load to restore)</h2>
+<textarea id="rj"></textarea><div class="row"><button id="cp">Copy</button><button id="ld">Load</button></div>
+<div class="nav"><button data-go="2">← Back</button><span></span></div></div>
+</div></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>

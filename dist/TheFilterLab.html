@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TheFilterLab – Machine Vision Filter Explorer</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#14181f;--mu:#667085;--bd:#dfe3ea;--ac:#0a7d6e;--ac2:#e8f5f3;--wa:#c2410c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1318;--card:#171c23;--tx:#e8ecf2;--mu:#94a0b3;--bd:#2a313c;--ac:#2dd4bf;--ac2:#12302d;--wa:#fb923c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1318;--card:#171c23;--tx:#e8ecf2;--mu:#94a0b3;--bd:#2a313c;--ac:#2dd4bf;--ac2:#12302d;--wa:#fb923c;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1500px;margin:0 auto;padding:16px}h1{font-size:20px;margin:4px 0}h2{font-size:14px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.sub{color:var(--mu);margin:0 0 12px}.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.g3{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+canvas{width:100%;background:#000;border-radius:6px;display:block}
+button,select,input[type=text]{font:inherit;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:5px 10px}
+button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.cap{font-size:12px;color:var(--mu);margin-top:4px}.st{border:1px solid var(--bd);border-radius:8px;padding:8px;margin-bottom:8px}
+.st b{font-size:13px}.sl{display:grid;grid-template-columns:110px 1fr 44px;gap:6px;align-items:center;font-size:12px;margin-top:4px}.sl input{width:100%}
+.it{border:1px solid var(--bd);border-radius:8px;padding:8px;margin-bottom:6px;display:flex;gap:8px;justify-content:space-between;align-items:flex-start}
+.it.rec{border-color:var(--ac);background:var(--ac2)}.overview{border:1px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0 14px;background:linear-gradient(145deg,var(--card),var(--ac2))}.catalogIntro{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.catalogIntro b{font-size:15px}.catList{display:grid;gap:8px;margin-top:10px}.catGroup{border:1px solid var(--bd);border-radius:11px;background:var(--card);overflow:hidden;transition:border-color .18s,box-shadow .18s}.catGroup[open]{border-color:var(--ac);box-shadow:0 3px 14px #00000012}.catGroup summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:10px}.catGroup summary::-webkit-details-marker{display:none}.catGroup summary:after{content:'＋';margin-left:auto;color:var(--ac);font-size:18px;font-weight:700}.catGroup[open] summary:after{content:'−'}.catIcon{width:34px;height:34px;border-radius:9px;background:var(--ac2);color:var(--ac);display:grid;place-items:center;font-size:17px;flex:none}.catSummary{min-width:0;flex:1}.catSummary b{display:block;font-size:14px}.catSummary small{display:block;color:var(--mu);font-size:12px;margin-top:2px}.catCount{font-size:11px;color:var(--mu);border:1px solid var(--bd);border-radius:20px;padding:3px 8px;white-space:nowrap}.catBody{padding:0 12px 12px}.catBody .it{background:var(--bg);margin-bottom:7px;padding:10px 11px}.catBody .it:last-child{margin-bottom:0}.catBody .it b{font-size:13px}.catBody .mu{line-height:1.5}.tag{font-size:10px;background:var(--ac);color:#fff;border-radius:4px;padding:1px 5px;margin-left:6px}
+.noisePanel{border:1px solid var(--bd);border-radius:12px;padding:12px;margin:10px 0 14px;background:linear-gradient(135deg,var(--card),var(--ac2))}.noiseHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.noiseHead strong{font-size:18px;color:var(--ac);font-variant-numeric:tabular-nums}.workspaceCard{background:linear-gradient(145deg,var(--card),var(--ac2));border-color:var(--bd)}.workspaceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.workspaceStat{border:1px solid var(--bd);border-radius:9px;padding:10px;min-width:0}.workspaceStat span{display:block;font-size:11px;color:var(--mu);margin-bottom:3px}.workspaceStat b{display:block;font-size:13px;overflow-wrap:anywhere}.workspaceTip{border-left:3px solid var(--ac);padding:8px 10px;background:var(--ac2);border-radius:0 8px 8px 0;font-size:12px;color:var(--tx)}.sc{margin-top:4px}.mu{color:var(--mu);font-size:12px}.ok{color:var(--ac);font-weight:600}
+ol{padding-left:18px;margin:6px 0}
+.app{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(390px,.9fr);gap:16px;align-items:start}.stick{position:sticky;top:10px}.imageWorkspace{padding:16px}.imageWorkspace .g2{grid-template-columns:1fr 1fr;gap:14px}.imageWorkspace canvas{height:clamp(340px,58vh,680px);object-fit:contain;background:#080b10}.workspaceCard{display:flex;align-items:center;gap:18px;padding:12px 16px;margin:0 0 14px}.workspaceCard h2{margin:0;white-space:nowrap}.workspaceCard>p{display:none}.workspaceGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0;flex:1}.workspaceStat{padding:8px 12px}.workspaceTip{max-width:260px;flex:0 1 260px}.stepsColumn{min-width:0}.toast{position:fixed;right:22px;bottom:22px;z-index:9999;background:#12302d;color:#eafffa;border:1px solid #2dd4bf;border-radius:12px;padding:11px 16px;box-shadow:0 10px 30px #0004;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s;font-weight:600}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){.app{grid-template-columns:1fr}.stick{position:static}.workspaceCard{align-items:stretch;flex-wrap:wrap}.workspaceGrid{grid-template-columns:repeat(2,minmax(0,1fr));flex-basis:100%}.workspaceTip{max-width:none;flex-basis:100%}.imageWorkspace canvas{height:clamp(260px,48vh,480px)}}
+@media(max-width:560px){.imageWorkspace .g2{grid-template-columns:1fr}.imageWorkspace canvas{height:320px}.workspaceCard{gap:10px}.workspaceCard h2{white-space:normal}}
+.tabs{display:flex;gap:4px;margin-bottom:8px}.tab{flex:1;text-align:center;padding:7px 4px;border-radius:8px;border:1px solid var(--bd);cursor:pointer;font-size:12px;background:var(--card)}
+.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}.stp[hidden]{display:none}.nav{display:flex;justify-content:space-between;margin-top:12px}
+textarea{width:100%;height:90px;font:11px monospace;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:6px}
+.hv{border-color:var(--ac)!important;transition:border-color .15s}canvas.hv{outline:2px solid var(--ac);outline-offset:-2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tg{width:38px;height:38px;padding:0;border-radius:50%;display:grid;place-items:center;transition:transform .2s}.tg:active{transform:scale(.88)}
+.tg svg{transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.tg .rays,.tg .core{transform-origin:12px 12px;transition:transform .6s cubic-bezier(.4,0,.2,1),opacity .4s}.tg .cut{transition:transform .6s cubic-bezier(.4,0,.2,1)}
+:root[data-theme="dark"] .tg svg{transform:rotate(40deg)}:root[data-theme="dark"] .tg .rays{opacity:0;transform:rotate(90deg) scale(.3)}
+:root[data-theme="dark"] .tg .core{transform:scale(1.7)}:root[data-theme="dark"] .tg .cut{transform:translate(-7px,7px)}
+
+/* TheFilterLab animated brand header */
+.top.brand-hero{
+  position:relative;isolation:isolate;overflow:hidden;min-height:142px;
+  padding:22px 22px;border:1px solid #3a2a66;border-radius:16px;
+  margin-bottom:12px;background-color:#120d2b;
+  
+  box-shadow:0 10px 28px rgba(0,0,0,.20),inset 0 0 35px rgba(0,180,255,.08);
+}
+.brand-lockup{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px}
+.brand-title{font-size:clamp(32px,5vw,48px);font-weight:850;letter-spacing:-.055em;line-height:1.05;text-shadow:0 2px 18px #000b}
+.brand-the{color:#eaf6ff}.brand-filter{color:#35d8f3}.brand-lab{color:#a78bfa}
+.brand-tagline{font-size:10px;letter-spacing:.30em;font-weight:700;color:#c7d7e8;margin-top:7px;text-shadow:0 1px 8px #000}
+.top.brand-hero .tg{position:relative;z-index:1;align-self:flex-start;background:rgba(5,17,29,.72);border-color:rgba(125,211,252,.38);color:#e5f7ff;backdrop-filter:blur(8px)}
+@media(max-width:560px){.top.brand-hero{min-height:116px;padding:18px 15px}.brand-tagline{font-size:9px;letter-spacing:.2em}}
+
+
+canvas.busy{opacity:.55;transition:opacity .15s}
+.stwarn{font-size:12px;margin-top:4px}
+button.pick{margin:6px 0 2px;border-color:var(--ac);color:var(--ac)}canvas.picking{outline:2px dashed var(--ac);outline-offset:-2px}.sl select{width:100%}
+
+/* 8-bit scenery behind the title */
+.top.brand-hero .scene{position:absolute;left:0;top:0;z-index:-2;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
+.top.brand-hero::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(10,6,28,.80),rgba(10,6,28,.42) 45%,rgba(10,6,28,0) 75%)}
+
+</style></head><body><div class="w">
+<div class="top brand-hero"><div class="brand-lockup" aria-label="TheFilterLab"><div class="brand-title"><span class="brand-the">The</span><span class="brand-filter">Filter</span><span class="brand-lab">Lab</span></div><div class="brand-tagline">FILTER · ANALYSE · ENHANCE</div></div><button id="tg" class="tg" aria-label="Switch between light and dark mode" title="Light / dark"><svg viewBox="0 0 24 24" width="22" height="22"><defs><mask id="mk"><rect width="24" height="24" fill="#fff"/><circle class="cut" cx="24" cy="0" r="7" fill="#000"/></mask></defs><g mask="url(#mk)"><circle class="core" cx="12" cy="12" r="5" fill="currentColor"/></g><g class="rays" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></g></svg></button></div>
+<p class="sub">Work through four steps: pick an image, mark the part type and region, build your filters, then inspect the result.</p>
+<div class="card workspaceCard"><h2>Workspace overview</h2><div class="workspaceGrid"><div class="workspaceStat"><span>Source</span><b id="wsSource">Built-in sample</b></div><div class="workspaceStat"><span>Image size</span><b id="wsSize">—</b></div><div class="workspaceStat"><span>Region of interest</span><b id="wsRoi">Full image</b></div><div class="workspaceStat"><span>Pipeline</span><b id="wsPipe">0 filters</b></div></div><div class="workspaceTip" id="wsTip">Start by choosing a sample or uploading an image. Then mark a region and add filters in Step 3.</div></div>
+<div class="app">
+<div class="card stick imageWorkspace"><div class="g2">
+<div><h2>Original · <span class="mu" id="roiTxt"></span></h2><canvas id="c0" style="cursor:crosshair;touch-action:none"></canvas></div>
+<div><h2>Result</h2><canvas id="c1"></canvas></div></div><div class="cap" id="info"></div></div>
+<div class="stepsColumn">
+
+<div class="tabs" id="tabs"></div>
+<div class="card stp" data-s="0"><h2>Step 1 · Choose an image</h2>
+<div class="row"><select id="src"></select><button id="up">Upload image</button><input type="file" id="file" accept="image/*" hidden><button id="cam">Start webcam</button></div>
+<div class="row" style="margin-top:8px"><label class="mu">Working resolution (uploads &amp; webcam) <select id="res"><option value="400">Fast · 400 px</option><option value="800" selected>Standard · 800 px</option><option value="1280">Detailed · 1280 px</option></select></label></div>
+<p class="mu">Choose a built-in sample, upload an image, or connect a webcam. Input sensor noise is available in Step 3 for samples, uploads and webcam frames.</p>
+<div class="nav"><span></span><button class="p" data-go="1">Next →</button></div></div>
+<div class="card stp" data-s="1" hidden><h2>Step 2 · What are you detecting, and where?</h2>
+<select id="part" style="width:100%"></select><div id="rec" style="margin-top:8px"></div>
+<h2 style="margin-top:14px">Region of interest</h2>
+<p class="mu">Drag a box on the Original image. Filters then run only inside it. Click once to clear.</p>
+<div class="row"><button id="ctr">Centre box</button><button id="clrroi">Clear box</button><label class="row"><input type="checkbox" id="zoom"> Show only the box in Result</label></div>
+<div class="nav"><button data-go="0">← Back</button><button class="p" data-go="2">Next →</button></div></div>
+<div class="card stp" data-s="2" hidden><h2>Step 3 · Build your filter pipeline</h2>
+<div class="noisePanel"><div class="noiseHead"><div><b>Input sensor noise</b><div class="mu" id="noiseHelp">Simulate sensor noise on any selected image, including uploads and webcam frames.</div></div><strong id="noiseVal">0</strong></div><div class="sl"><span>Noise level</span><input type="range" id="noise" min="0" max="40" value="0" title="Adds simulated sensor noise to the current image"><span></span></div><div class="mu" id="noiseStatus">Noise is off. Increase the level to simulate sensor noise.</div></div>
+<div class="overview"><div class="catalogIntro"><b>Explore the filter library</b><span class="mu" id="filterCount"></span></div><p class="mu">Several categories are available. Each category explains what its filters do; expand one to see descriptions and add individual filters.</p></div>
+<div id="pipe"></div><div class="row"><button id="clr">Clear pipeline</button></div>
+<h2 style="margin-top:14px">Filter categories</h2>
+<div class="row" style="margin-bottom:8px"><input type="text" id="q" placeholder="Search categories or filters…" style="flex:1;min-width:140px"></div>
+<div class="sc catList" id="cl"></div>
+<div class="nav"><button data-go="1">← Back</button><button class="p" data-go="3">Next →</button></div></div>
+<div class="card stp" data-s="3" hidden><h2>Step 4 · Inspect and save</h2>
+<label class="row"><input type="checkbox" id="bl"> Count bright blobs ≥ <input type="number" id="minA" value="40" style="width:64px"> px</label>
+<div class="sl"><span>Before / after</span><input type="range" id="split" min="0" max="100" value="0"><span id="splitVal">off</span></div>
+<p class="mu">Slide (or drag on the Result image) to reveal the original on the left of a divider. Double-click the Result to turn it off.</p>
+<h2 style="margin-top:12px">Recipe (filters, region, noise &amp; view settings. Copy to save, paste and Load to restore)</h2>
+<textarea id="rj"></textarea><div class="row"><button id="cp">Copy</button><button id="ld">Load</button></div>
+<div class="nav"><button data-go="2">← Back</button><span></span></div></div>
+</div></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="text/plain" id="engine-src">
+const fromG=(g,w,h)=>{const o=new ImageData(w,h);for(let i=0;i<g.length;i++){const v=g[i]<0?0:g[i]>255?255:g[i],j=i*4;o.data[j]=o.data[j+1]=o.data[j+2]=v;o.data[j+3]=255}return o};
+const G=im=>{const n=im.width*im.height,g=new Float32Array(n),d=im.data;for(let i=0;i<n;i++){const j=i*4;g[i]=.299*d[j]+.587*d[j+1]+.114*d[j+2]}return g};
+const gf=f=>{const fn=(im,p)=>{const w=im.width,h=im.height;return fromG(f(G(im),w,h,p),w,h)};fn.g=f;return fn};
+// Colour-preserving wrapper: runs a gray kernel on each of R,G,B so colour survives the step.
+const cf=f=>(im,p)=>{const w=im.width,h=im.height,n=w*h,d=im.data,o=new ImageData(w,h),pl=new Float32Array(n);
+for(let c=0;c<3;c++){for(let i=0;i<n;i++)pl[i]=d[i*4+c];const r=f(pl,w,h,p);for(let i=0;i<n;i++){const v=r[i];o.data[i*4+c]=v<0?0:v>255?255:v}}
+for(let i=0;i<n;i++)o.data[i*4+3]=255;return o};
+const cx=(v,a,b)=>v<a?a:v>b?b:v;
+function gblur(g,w,h,s){if(s<.1)return g;const r=Math.ceil(s*3),k=[];let sm=0;for(let i=-r;i<=r;i++){const v=Math.exp(-i*i/(2*s*s));k.push(v);sm+=v}
+const t=new Float32Array(g.length),o=new Float32Array(g.length);
+for(let y=0;y<h;y++)for(let x=0;x<w;x++){let a=0;for(let i=-r;i<=r;i++)a+=g[y*w+cx(x+i,0,w-1)]*k[i+r];t[y*w+x]=a/sm}
+for(let y=0;y<h;y++)for(let x=0;x<w;x++){let a=0;for(let i=-r;i<=r;i++)a+=t[cx(y+i,0,h-1)*w+x]*k[i+r];o[y*w+x]=a/sm}return o}
+function lstat(g,w,h,s){const m=gblur(g,w,h,s),q=gblur(g.map(v=>v*v),w,h,s);return{m,sd:m.map((v,i)=>Math.sqrt(Math.max(0,q[i]-v*v)))}}
+function mm(g,w,h,r,mx){const pass=(s,hz)=>{const o=new Float32Array(s.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=mx?-1e9:1e9;for(let k=-r;k<=r;k++){const q=s[hz?y*w+cx(x+k,0,w-1):cx(y+k,0,h-1)*w+x];if(mx?q>v:q<v)v=q}o[y*w+x]=v}return o};return pass(pass(g,1),0)}
+function sob(b,w,h){const gx=new Float32Array(b.length),gy=new Float32Array(b.length),m=new Float32Array(b.length);
+for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;
+const a=(b[i-w+1]+2*b[i+1]+b[i+w+1])-(b[i-w-1]+2*b[i-1]+b[i+w-1]),c=(b[i+w-1]+2*b[i+w]+b[i+w+1])-(b[i-w-1]+2*b[i-w]+b[i-w+1]);gx[i]=a;gy[i]=c;m[i]=Math.hypot(a,c)}return{gx,gy,m}}
+function canny(g,w,h,s,lo,hi){const{gx,gy,m}=sob(gblur(g,w,h,s),w,h),n=new Float32Array(g.length),o=new Float32Array(g.length);
+for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;let a=Math.atan2(gy[i],gx[i])*180/Math.PI;if(a<0)a+=180;
+const[p,q]=a<22.5||a>=157.5?[i-1,i+1]:a<67.5?[i-w-1,i+w+1]:a<112.5?[i-w,i+w]:[i-w+1,i+w-1];if(m[i]>=m[p]&&m[i]>=m[q])n[i]=m[i]}
+const st=[];for(let i=0;i<n.length;i++)if(n[i]>=hi){o[i]=255;st.push(i)}
+while(st.length){const i=st.pop(),x=i%w,y=(i/w)|0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h)continue;const j=Y*w+X;if(!o[j]&&n[j]>=lo){o[j]=255;st.push(j)}}}return o}
+function otsu(g){const H=new Float64Array(256);g.forEach(v=>H[cx(v|0,0,255)]++);let T=g.length,sm=0;for(let i=0;i<256;i++)sm+=i*H[i];let sb=0,wb=0,best=0,t=128;
+for(let i=0;i<256;i++){wb+=H[i];if(!wb)continue;const wf=T-wb;if(!wf)break;sb+=i*H[i];const d=sb/wb-(sm-sb)/wf,v=wb*wf*d*d;if(v>best){best=v;t=i}}return t}
+
+// ---------- defect-detection helpers
+// Multi-scale Hessian ridge detector: bright/dark thin lines (scratches, hairline cracks) of any orientation.
+// A gradient term suppresses the false "ridges" that appear on either side of a plain step edge.
+function ridge(g,w,h,s,mode){const Rb=new Float32Array(g.length),Rd=new Float32Array(g.length);
+for(const sg of[s,s*1.6]){const L=gblur(g,w,h,sg),n2=sg*sg;
+for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x,lxx=L[i-1]-2*L[i]+L[i+1],lyy=L[i-w]-2*L[i]+L[i+w],lxy=(L[i+w+1]-L[i+w-1]-L[i-w+1]+L[i-w-1])/4,
+tr=(lxx+lyy)/2,dd=Math.sqrt(((lxx-lyy)/2)**2+lxy*lxy);let a=tr+dd,b=tr-dd;if(Math.abs(a)>Math.abs(b)){const t=a;a=b;b=t}
+const ab=Math.abs(b),gm=Math.hypot((L[i+1]-L[i-1])/2,(L[i+w]-L[i-w])/2),r=ab*Math.exp(-(a*a)/(.5*b*b))/(1+(gm/(ab*sg*.5+1e-6))**2)*n2;
+if(b<0){if(r>Rb[i])Rb[i]=r}else if(r>Rd[i])Rd[i]=r}}
+if(mode===0)return Rb;if(mode===1)return Rd;
+// "Both": the flanks of a bright line look like faint dark ridges (and vice versa). Drop a ridge when a much stronger opposite one is nearby.
+const rad=Math.max(2,Math.ceil(s*2.4)),Mb=mm(Rb,w,h,rad,1),Md=mm(Rd,w,h,rad,1),o=new Float32Array(g.length);
+for(let i=0;i<o.length;i++){const vb=Rb[i]>=.6*Md[i]?Rb[i]:0,vd=Rd[i]>=.6*Mb[i]?Rd[i]:0;o[i]=vb>vd?vb:vd}return o}
+// Hysteresis: keep weak pixels (>=lo) only if connected to a strong one (>=hi). Great for long cracks.
+function hyst(g,w,h,lo,hi){const o=new Float32Array(g.length),st=[];for(let i=0;i<g.length;i++)if(g[i]>=hi){o[i]=255;st.push(i)}
+while(st.length){const i=st.pop(),x=i%w,y=(i/w)|0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h)continue;const j=Y*w+X;if(!o[j]&&g[j]>=lo){o[j]=255;st.push(j)}}}return o}
+// Remove connected white regions smaller than `min` (by pixel area, or by longest side of the bounding box for thin scratches).
+function specks(g,w,h,min,byLen){const o=new Float32Array(g.length),seen=new Uint8Array(g.length),st=new Int32Array(g.length);
+for(let s=0;s<g.length;s++){if(seen[s]||g[s]<128)continue;let sp=0,n=0,x0=w,y0=h,x1=0,y1=0;const mem=[];st[sp++]=s;seen[s]=1;
+while(sp){const i=st[--sp],x=i%w,y=(i/w)|0;mem.push(i);n++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h)continue;const j=Y*w+X;if(!seen[j]&&g[j]>=128){seen[j]=1;st[sp++]=j}}}
+if((byLen?Math.max(x1-x0+1,y1-y0+1):n)>=min)for(const i of mem)o[i]=255}return o}
+const OVC=[[255,40,40],[255,214,10],[60,235,90],[40,220,255],[255,80,230]];
+const P=(k,l,a,b,s,d)=>({k,l,a,b,s,d});
+const F=[
+{id:'gray',n:'Grayscale',c:'Tone',d:'Collapses colour to luminance. Usually the first step; cuts data 3×.',P:[],f:gf(g=>g)},
+{id:'bc',n:'Brightness / contrast',c:'Tone',d:'Linear gain and offset. Quick fix for under- or over-exposed images.',P:[P('b','Brightness',-100,100,1,0),P('c','Contrast',.2,3,.05,1)],f:gf((g,w,h,p)=>g.map(v=>(v-128)*p.c+128+p.b))},
+{id:'gamma',n:'Gamma',c:'Tone',d:'Non-linear brightness. Lifts shadows (γ<1) or deepens them (γ>1).',P:[P('g','Gamma',.2,3,.05,1)],f:gf((g,w,h,p)=>g.map(v=>255*Math.pow(cx(v,0,255)/255,p.g)))},
+{id:'inv',n:'Invert',c:'Tone',d:'Swaps light and dark so objects of interest become the bright foreground.',P:[],f:gf(g=>g.map(v=>255-v))},
+{id:'norm',n:'Contrast stretch',c:'Tone',d:'Maps the darkest and brightest pixels to 0 and 255. Great for low-contrast parts.',P:[],f:gf(g=>{let a=1e9,b=-1e9;g.forEach(v=>{if(v<a)a=v;if(v>b)b=v});return g.map(v=>(v-a)*255/(b-a||1))})},
+{id:'eq',n:'Histogram equalisation',c:'Tone',d:'Spreads intensities evenly to expose hidden detail. Can amplify noise.',P:[],f:gf(g=>{const H=new Float64Array(256);g.forEach(v=>H[cx(v|0,0,255)]++);let s=0;const L=H.map(v=>(s+=v)*255/g.length);return g.map(v=>L[cx(v|0,0,255)])})},
+{id:'gauss',n:'Gaussian blur',c:'Noise',d:'Smooths sensor noise. Always blur before edge detection.',P:[P('s','Sigma',.3,6,.1,1.5)],f:gf((g,w,h,p)=>gblur(g,w,h,p.s))},
+{id:'median',n:'Median filter',c:'Noise',d:'Removes salt-and-pepper noise and speckle while keeping edges sharp.',P:[P('r','Radius',1,3,1,1)],f:gf((g,w,h,p)=>{const o=new Float32Array(g.length),r=p.r,a=new Float32Array((2*r+1)**2);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let n=0;for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++)a[n++]=g[cx(y+j,0,h-1)*w+cx(x+i,0,w-1)];o[y*w+x]=a.slice(0,n).sort()[n>>1]}return o})},
+{id:'unsharp',n:'Unsharp mask',c:'Noise',d:'Boosts fine detail by adding back the difference from a blurred copy.',P:[P('a','Amount',0,4,.1,1.5),P('s','Sigma',.5,5,.1,1.5)],f:gf((g,w,h,p)=>{const b=gblur(g,w,h,p.s);return g.map((v,i)=>v+p.a*(v-b[i]))})},
+{id:'sobel',n:'Sobel edges',c:'Edges',d:'Gradient magnitude. Thick, soft edges; fast and robust for measuring.',P:[P('k','Gain',.5,5,.1,1.5)],f:gf((g,w,h,p)=>sob(g,w,h).m.map(v=>v/4*p.k))},
+{id:'lap',n:'Laplacian',c:'Edges',d:'Second derivative. Highlights fine lines, scratches and corners; noise sensitive.',P:[P('k','Gain',.5,6,.1,2)],f:gf((g,w,h,p)=>{const o=new Float32Array(g.length);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;o[i]=Math.abs(g[i-1]+g[i+1]+g[i-w]+g[i+w]-4*g[i])*p.k}return o})},
+{id:'canny',n:'Canny edges',c:'Edges',d:'Thin, clean, connected edges. The standard for outline and dimension work.',P:[P('s','Blur σ',.5,4,.1,1.4),P('lo','Low thr',5,300,5,40),P('hi','High thr',10,400,5,100)],f:gf((g,w,h,p)=>canny(g,w,h,p.s,p.lo,p.hi))},
+{id:'thr',n:'Binary threshold',c:'Threshold',d:'Fixed cut-off. Fastest segmentation when lighting is stable and controlled.',P:[P('t','Threshold',0,255,1,128),P('inv','Objects dark',0,1,1,0)],f:gf((g,w,h,p)=>g.map(v=>(p.inv?v<=p.t:v>p.t)?255:0))},
+{id:'otsu',n:'Otsu threshold',c:'Threshold',d:'Picks the threshold automatically for a two-class (part vs background) image.',P:[P('inv','Objects dark',0,1,1,0)],f:gf((g,w,h,p)=>{const t=otsu(g);return g.map(v=>(p.inv?v<=t:v>t)?255:0)})},
+{id:'adapt',n:'Adaptive threshold',c:'Threshold',d:'Local threshold against neighbourhood mean. Survives uneven lighting; ideal for text and traces.',P:[P('s','Window σ',2,30,1,8),P('C','Offset C',0,40,1,6),P('dark','Objects dark',0,1,1,1)],f:gf((g,w,h,p)=>{const m=gblur(g,w,h,p.s);return g.map((v,i)=>(p.dark?v<m[i]-p.C:v>m[i]+p.C)?255:0)})},
+{id:'ero',n:'Erode',c:'Morphology',d:'Shrinks bright regions. Removes small specks and separates touching parts.',P:[P('r','Radius',1,8,1,1)],f:gf((g,w,h,p)=>mm(g,w,h,p.r,0))},
+{id:'dil',n:'Dilate',c:'Morphology',d:'Grows bright regions. Bridges small gaps in edges and strokes.',P:[P('r','Radius',1,8,1,1)],f:gf((g,w,h,p)=>mm(g,w,h,p.r,1))},
+{id:'open',n:'Opening',c:'Morphology',d:'Erode then dilate. Deletes small bright noise while keeping the main shape size.',P:[P('r','Radius',1,8,1,1)],f:gf((g,w,h,p)=>mm(mm(g,w,h,p.r,0),w,h,p.r,1))},
+{id:'close',n:'Closing',c:'Morphology',d:'Dilate then erode. Fills small holes and gaps inside parts.',P:[P('r','Radius',1,8,1,2)],f:gf((g,w,h,p)=>mm(mm(g,w,h,p.r,1),w,h,p.r,0))},
+{id:'grad',n:'Morphological gradient',c:'Morphology',d:'Dilate minus erode: a clean outline of every region.',P:[P('r','Radius',1,5,1,1)],f:gf((g,w,h,p)=>{const a=mm(g,w,h,p.r,1),b=mm(g,w,h,p.r,0);return a.map((v,i)=>v-b[i])})},
+{id:'tophat',n:'Top-hat / black-hat',c:'Morphology',d:'Isolates small bright (0) or dark (1) features against a varying background. Good for scratches and pits.',P:[P('r','Radius',2,15,1,4),P('m','Dark features',0,1,1,0),P('k','Gain',1,6,.5,3)],f:gf((g,w,h,p)=>{const o=p.m?mm(mm(g,w,h,p.r,1),w,h,p.r,0):mm(mm(g,w,h,p.r,0),w,h,p.r,1);return g.map((v,i)=>(p.m?o[i]-v:v-o[i])*p.k)})},
+{id:'flat',n:'Flat-field correction',c:'Lighting',d:'Divides by a heavy blur to cancel uneven illumination and vignetting.',P:[P('s','Blur σ',10,80,1,40),P('k','Gain',.5,2,.05,1)],f:gf((g,w,h,p)=>{const b=gblur(g,w,h,p.s);return g.map((v,i)=>v/(b[i]+1)*128*p.k)})},
+{id:'hue',n:'Hue isolate',c:'Colour',d:'White where the pixel hue matches a target colour. Sorts colour-coded parts.',P:[P('h','Hue °',0,360,1,0),P('w','Tolerance °',5,90,1,25)],f:(im,p)=>{const w=im.width,h=im.height,o=new Float32Array(w*h),d=im.data;for(let i=0;i<w*h;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b),c=mx-mn;if(c<25)continue;let H=mx==r?((g-b)/c)%6:mx==g?(b-r)/c+2:(r-g)/c+4;H=(H*60+360)%360;const df=Math.abs(H-p.h);if(Math.min(df,360-df)<=p.w)o[i]=255}return fromG(o,w,h)}},
+{id:'chan',n:'Channel select',c:'Colour',d:'Uses only R, G or B. Mimics a coloured filter in front of the lens.',P:[P('c','Channel 0=R 1=G 2=B',0,2,1,0)],f:(im,p)=>{const n=im.width*im.height,o=new Float32Array(n);for(let i=0;i<n;i++)o[i]=im.data[i*4+p.c];return fromG(o,im.width,im.height)}},
+{id:'prew',n:'Prewitt edges',c:'Edges',d:'Like Sobel with uniform weights. Slightly noisier, very fast.',P:[P('k','Gain',.5,5,.1,1.5)],f:gf((g,w,h,p)=>{const o=new Float32Array(g.length);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x,a=g[i-w+1]+g[i+1]+g[i+w+1]-g[i-w-1]-g[i-1]-g[i+w-1],b=g[i+w-1]+g[i+w]+g[i+w+1]-g[i-w-1]-g[i-w]-g[i-w+1];o[i]=Math.hypot(a,b)/3*p.k}return o})},
+{id:'dog',n:'Difference of Gaussians',c:'Edges',d:'Band-pass: keeps features near a chosen size. Finds spots, blobs and fine edges.',P:[P('a','Small σ',.5,5,.1,1),P('b','Large σ',1,12,.1,3),P('k','Gain',1,8,.5,4)],f:gf((g,w,h,p)=>{const a=gblur(g,w,h,p.a),b=gblur(g,w,h,p.b);return a.map((v,i)=>128+(v-b[i])*p.k)})},
+{id:'emb',n:'Emboss',c:'Edges',d:'Directional relief. Makes engraving and height changes visible.',P:[P('k','Strength',.5,4,.1,1.5)],f:gf((g,w,h,p)=>{const o=new Float32Array(g.length).fill(128);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;o[i]=128+(g[i+w+1]-g[i-w-1])*p.k}return o})},
+{id:'post',n:'Posterise',c:'Tone',d:'Reduces to a few grey levels. Turns smooth shading into flat regions.',P:[P('n','Levels',2,12,1,4)],f:gf((g,w,h,p)=>g.map(v=>Math.round(cx(v,0,255)/255*(p.n-1))*255/(p.n-1)))},
+{id:'log',n:'Log transform',c:'Tone',d:'Strongly expands dark tones. Reveals detail hidden in shadow.',P:[P('k','Strength',.5,3,.1,1)],f:gf((g,w,h,p)=>g.map(v=>255*Math.log(1+p.k*10*cx(v,0,255)/255)/Math.log(1+p.k*10)))},
+{id:'inr',n:'Range threshold',c:'Threshold',d:'Keeps only pixels between two grey levels. Isolates one brightness band.',P:[P('lo','Low',0,255,1,80),P('hi','High',0,255,1,180)],f:gf((g,w,h,p)=>g.map(v=>v>=p.lo&&v<=p.hi?255:0))},
+{id:'nib',n:'Niblack local threshold',c:'Threshold',d:'Threshold from local mean and spread. Handles noisy, textured backgrounds.',P:[P('s','Window σ',3,30,1,10),P('k','k',-1,1,.05,-.2),P('dark','Objects dark',0,1,1,1)],f:gf((g,w,h,p)=>{const{m,sd}=lstat(g,w,h,p.s);return g.map((v,i)=>{const t=m[i]+p.k*sd[i];return(p.dark?v<t:v>t)?255:0})})},
+{id:'lnorm',n:'Local normalisation',c:'Lighting',d:'Removes local brightness and contrast variation together. Stronger than flat-field.',P:[P('s','Window σ',3,40,1,15),P('k','Gain',20,80,1,45)],f:gf((g,w,h,p)=>{const{m,sd}=lstat(g,w,h,p.s);return g.map((v,i)=>128+(v-m[i])/(sd[i]+8)*p.k)})},
+{id:'lvar',n:'Texture (local variance)',c:'Texture',d:'Bright where the surface is rough or busy, dark where smooth. Finds fabric, grain and damaged zones.',P:[P('s','Window σ',1,12,.5,3),P('k','Gain',1,10,.5,4)],f:gf((g,w,h,p)=>lstat(g,w,h,p.s).sd.map(v=>v*p.k))},
+{id:'hpass',n:'High-pass',c:'Texture',d:'Subtracts the blurred image, leaving only fine detail around mid-grey.',P:[P('s','Blur σ',1,20,.5,5),P('k','Gain',1,6,.5,2)],f:gf((g,w,h,p)=>{const b=gblur(g,w,h,p.s);return g.map((v,i)=>128+(v-b[i])*p.k)})},
+{id:'sat',n:'Saturation map',c:'Colour',d:'Bright where colour is vivid. Separates coloured parts from grey backgrounds.',P:[P('k','Gain',.5,3,.1,1)],f:(im,p)=>{const n=im.width*im.height,o=new Float32Array(n),d=im.data;for(let i=0;i<n;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2],mx=Math.max(r,g,b);o[i]=mx?(mx-Math.min(r,g,b))/mx*255*p.k:0}return fromG(o,im.width,im.height)}},
+{id:'cd',n:'Colour distance',c:'Colour',d:'Keeps pixels close to a chosen colour. Use the eyedropper to pick it from the image; "Ignore brightness" stops shadows dropping out.',P:[P('r','Red',0,255,1,214),P('g','Green',0,255,1,40),P('b','Blue',0,255,1,40),P('t','Tolerance',10,250,1,70),P('nb','Ignore brightness',0,1,1,0),P('m','Show as',0,2,1,1)],f:(im,p)=>{const n=im.width*im.height,d=im.data,o=new Float32Array(n),ts=p.r+p.g+p.b+1,mode=p.m===undefined?(p.k?1:0):p.m,out=new ImageData(im.width,im.height);
+for(let i=0;i<n;i++){const j=i*4,r=d[j],g=d[j+1],b=d[j+2];let k=1;
+if(p.nb){const sm=r+g+b+1;if(sm<24)k=-1;else k=ts/sm}
+const hit=k>0&&Math.hypot(r*k-p.r,g*k-p.g,b*k-p.b)<=p.t;
+const f=mode==0?(hit?255:0):hit?1:(mode==1?0:.22);
+if(mode==0){out.data[j]=out.data[j+1]=out.data[j+2]=f}else{out.data[j]=r*f;out.data[j+1]=g*f;out.data[j+2]=b*f}out.data[j+3]=255}return out}},
+{id:'ridge',n:'Scratch / crack detector',c:'Defects',d:'Finds thin bright or dark lines of any direction: scratches, hairline cracks, seams. Match "Line width" to the defect, raise Gain until it glows.',P:[P('s','Line width σ',.8,4,.1,1.3),P('m','Finds',0,2,1,2),P('k','Gain',1,25,.5,6)],f:gf((g,w,h,p)=>ridge(g,w,h,p.s,p.m).map(v=>v*p.k))},
+{id:'anom',n:'Paint damage / local anomaly',c:'Defects',d:'Highlights anything whose colour differs from its surroundings: chips, peeling, rust, stains. Larger window = bigger defects, but must exceed the defect size.',P:[P('s','Window σ',4,40,1,14),P('m','Look for',0,2,1,0),P('k','Gain',.5,8,.1,2.5)],f:(im,p)=>{const w=im.width,h=im.height,n=w*h,d=im.data,B=[0,1,2].map(c=>{const pl=new Float32Array(n);for(let i=0;i<n;i++)pl[i]=d[i*4+c];return gblur(pl,w,h,p.s)}),o=new Float32Array(n);
+for(let i=0;i<n;i++){const dr=d[i*4]-B[0][i],dg=d[i*4+1]-B[1][i],db=d[i*4+2]-B[2][i],l=.299*dr+.587*dg+.114*db;if((p.m==1&&l<0)||(p.m==2&&l>0))continue;o[i]=Math.hypot(dr,dg,db)/1.732*p.k}return fromG(o,w,h)}},
+{id:'hyst',n:'Hysteresis threshold',c:'Defects',d:'Keeps strong pixels plus weaker ones touching them. Turns a patchy defect response into complete, connected cracks without picking up isolated noise.',P:[P('lo','Low',1,200,1,25),P('hi','High',2,255,1,60)],f:gf((g,w,h,p)=>hyst(g,w,h,Math.min(p.lo,p.hi),p.hi))},
+{id:'spk',n:'Remove small specks',c:'Defects',d:'Deletes white regions that are too small. "Length" keeps long thin scratches while dropping dust; "Area" keeps big chips.',P:[P('n','Minimum size px',1,300,1,15),P('m','Measure by',0,1,1,1)],f:gf((g,w,h,p)=>specks(g,w,h,p.n,p.m))},
+{id:'ovl',n:'Highlight on original',c:'Defects',d:'Paints the white regions of the mask in colour on top of the original photo, so defects are marked exactly where they are. Make it the last step.',P:[P('c','Colour',0,4,1,0),P('a','Opacity %',20,100,5,85),P('t','Thicken px',0,4,1,0),P('o','Outline only',0,1,1,0)],f:(im,p,orig)=>{const w=im.width,h=im.height,base=orig&&orig.width===w&&orig.height===h?orig:im,o=new ImageData(new Uint8ClampedArray(base.data),w,h),d=im.data,od=o.data,col=OVC[p.c]||OVC[0],al=p.a/100,t=Math.max(1,Math.round(w/450));let m=new Float32Array(w*h);for(let i=0;i<m.length;i++)m[i]=d[i*4];if(p.t)m=mm(m,w,h,p.t,1);
+for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(m[i]<128)continue;
+if(p.o){let edge=false;for(let dy=-t;dy<=t&&!edge;dy+=t)for(let dx=-t;dx<=t;dx+=t){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h||m[Y*w+X]<128){edge=true;break}}if(!edge)continue}
+const j=i*4;for(let c=0;c<3;c++)od[j+c]=od[j+c]*(1-al)+col[c]*al}return o}},
+];
+// Filters that keep colour (applied per channel) vs filters that need colour input.
+// Everything else outputs grayscale. This lets Hue/Saturation/Colour-distance work after blur, gamma, etc.
+const KEEPCOL=['bc','gamma','inv','post','log','gauss','median','unsharp','flat'],NEEDCOL=['hue','chan','sat','cd'];
+F.forEach(f=>{f.col=KEEPCOL.includes(f.id)||f.id==='ovl';f.needsCol=NEEDCOL.includes(f.id);if(f.col&&f.f.g)f.f=cf(f.f.g)});
+F.forEach(f=>f.P.forEach(q=>{if(!q.o&&q.a===0&&q.b===1&&q.s===1)q.o=['Off','On']}));
+F.find(f=>f.id==='chan').P[0].o=['Red','Green','Blue'];
+const setO=(id,k,o)=>{F.find(f=>f.id===id).P.find(q=>q.k===k).o=o};
+setO('ridge','m',['Bright lines','Dark lines','Both']);setO('anom','m',['Any change','Brighter','Darker']);setO('spk','m',['Area','Length']);setO('ovl','c',['Red','Yellow','Green','Cyan','Magenta']);F.find(f=>f.id==='chan').P[0].l='Channel';
+F.find(f=>f.id==='cd').P.find(q=>q.k==='m').o=['Mask','Colour','Dimmed'];
+const FM=Object.fromEntries(F.map(f=>[f.id,f]));
+function crop(im,r){const o=new ImageData(r.w,r.h);for(let y=0;y<r.h;y++){const k=((r.y+y)*im.width+r.x)*4;o.data.set(im.data.subarray(k,k+r.w*4),y*r.w*4)}return o}
+function withSensorNoise(im,level){if(!level)return im;const out=new ImageData(new Uint8ClampedArray(im.data),im.width,im.height),d=out.data,amp=level;for(let p=0;p<d.length;p+=4){let seed=((p/4)|0)+0x9e3779b9;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)/4294967295};const n=(rnd()+rnd()+rnd()-1.5)*(amp*1.15);for(let c=0;c<3;c++)d[p+c]=cx(d[p+c]+n,0,255)}return out}
+function blobs(im,minA){const w=im.width,h=im.height,d=im.data,seen=new Uint8Array(w*h),st=new Int32Array(w*h),out=[];
+for(let s=0;s<w*h;s++){if(seen[s]||Math.max(d[s*4],d[s*4+1],d[s*4+2])<40)continue;let sp=0,a=0,x0=w,y0=h,x1=0,y1=0;st[sp++]=s;seen[s]=1;
+while(sp){const i=st[--sp],x=i%w,y=(i/w)|0;a++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+for(const j of[i-1,i+1,i-w,i+w]){if(j<0||j>=w*h||seen[j])continue;if((j==i-1&&x==0)||(j==i+1&&x==w-1))continue;if(Math.max(d[j*4],d[j*4+1],d[j*4+2])>=40){seen[j]=1;st[sp++]=j}}}
+if(a>=minA)out.push([x0,y0,x1-x0+1,y1-y0+1,a])}return out}
+
+// ---------- ROI helper shared by UI and worker
+function normRoi(r,W,H){if(!r||!(r.w>8&&r.h>8))return null;const o={x:cx(Math.round(r.x),0,W-9),y:cx(Math.round(r.y),0,H-9)};o.w=Math.min(Math.round(r.w),W-o.x);o.h=Math.min(Math.round(r.h),H-o.y);return o}
+// ---------- pipeline runner with per-step cache.
+// Changing step N only recomputes steps N..end. Changing the source, noise or ROI recomputes everything.
+function makeRunner(){let src=null,sid=-1,cache=[],bkey='',cropped=null,noisy=null;
+return{
+setSource(id,im){src=im;sid=id;cache=[];bkey=''},
+run(req){const R=normRoi(req.roi,src.width,src.height),bk=JSON.stringify([sid,req.noise,R]);
+if(bk!==bkey){bkey=bk;cache=[];noisy=withSensorNoise(src,req.noise);cropped=R?crop(noisy,R):noisy}
+const t=performance.now();let cur=cropped,hit=0,col=true;const warn=[];
+req.pipe.forEach((s,i)=>{const f=FM[s.id],k=JSON.stringify(s);
+if(f.needsCol&&!col)warn[i]='Input is already grayscale here. Move this step above the filters that remove colour.';
+col=col&&f.col;
+if(cache[i]&&cache[i].k===k){cur=cache[i].img;hit++}
+else{cache.length=i;cur=f.f(cur,s.p,cropped);cache[i]={k,img:cur}}});
+cache.length=req.pipe.length;
+const ms=Math.round(performance.now()-t),bi=(()=>{let k=req.pipe.length-1;while(k>=0&&req.pipe[k].id==='ovl')k--;return k})(),b=req.blobs?blobs(bi>=0&&cache[bi]?cache[bi].img:cur,req.minA):null;
+return{roi:R,cur:new ImageData(new Uint8ClampedArray(cur.data),cur.width,cur.height),noisy:req.noise?new ImageData(new Uint8ClampedArray(noisy.data),noisy.width,noisy.height):null,ms,hit,warn,blobs:b}}}}
+if(typeof module!=='undefined')module.exports={ridge,hyst,specks,F,FM,makeRunner,normRoi,blobs,crop,withSensorNoise,fromG,G,gblur,otsu,canny,cf};
+
+</script>
+<script>
+const PARTS=[
+{id:'metal',n:'Shiny / machined metal',light:'Use diffuse dome or cross-polarised light to tame glare.',bl:0,s:[['flat',{s:40},'Cancels the hot-spot gradient from specular light.'],['gauss',{s:1.5},'Smooths machining texture before edge finding.'],['canny',{s:1.2,lo:30,hi:80},'Thin, connected outline for dimensions.'],['close',{r:2},'Bridges small gaps in the outline.']]},
+{id:'pcb',n:'PCB / electronics',light:'Low-angle ring light for traces; coaxial light for flat pads.',bl:1,s:[['eq',{},'Lifts contrast between board and copper.'],['adapt',{s:8,C:6,dark:1},'Local threshold copes with uneven light.'],['open',{r:1},'Removes speckle noise.']]},
+{id:'lowc',n:'Low-contrast part (dark on dark)',light:'Try backlight or a coloured light that contrasts with the part.',bl:1,s:[['norm',{},'Stretches the narrow intensity range.'],['eq',{},'Separates close grey levels.'],['gauss',{s:1.2},'Calms amplified noise.'],['otsu',{inv:0},'Automatic split into part and background.']]},
+{id:'ocr',n:'Printed label / text (OCR)',light:'Diffuse dome light; avoid glare on glossy labels.',bl:0,s:[['flat',{s:25},'Removes shading across the label.'],['adapt',{s:6,C:8,dark:1},'Crisp black-on-white text under uneven light.'],['close',{r:1},'Joins broken strokes.']]},
+{id:'scratch',n:'Scratches / hairline cracks (highlight)',light:'Low-angle light across the surface makes scratches glint; avoid direct glare.',bl:0,s:[['ridge',{s:1.3,m:2,k:6},'Finds thin bright or dark lines in any direction.'],['hyst',{lo:15,hi:35},'Keeps weak line pixels only when they connect to strong ones, so faint scratches survive.'],['spk',{n:15,m:1},'Drops dust and tiny specks, keeps long scratches.'],['ovl',{c:0,a:90,t:0,o:0},'Marks the defects in red on the original photo.']]},
+{id:'paint',n:'Paint damage / chips / peeling (highlight)',light:'Even diffuse light so only real colour changes show up.',bl:1,s:[['anom',{s:14,m:0,k:2.5},'Flags areas whose colour differs from their surroundings.'],['hyst',{lo:30,hi:60},'Grows weak regions that touch strong ones.'],['open',{r:3},'Removes thin lines (scratches) so only blob-shaped damage remains.'],['close',{r:2},'Fills small gaps inside a chip.'],['spk',{n:60,m:0},'Ignores spots smaller than a real chip.'],['ovl',{c:1,a:85,o:1},'Outlines the damage in yellow on the original photo.']]},
+{id:'defect',n:'Surface scratches / cracks',light:'Dark-field or low-angle light makes defects glow.',bl:1,s:[['flat',{s:30},'Flattens the background so defects stand out.'],['tophat',{r:4,m:0,k:3},'Extracts thin bright defects.'],['thr',{t:50,inv:0},'Marks defect pixels for counting.']]},
+{id:'glass',n:'Transparent / glass',light:'Backlight or dark-field. Transmitted light reveals glass edges.',bl:0,s:[['gauss',{s:1.2},'Suppresses noise.'],['sobel',{k:2.5},'Edges show refraction boundaries.'],['thr',{t:60,inv:0},'Keeps only strong edges.'],['close',{r:1},'Reconnects edge fragments.']]},
+{id:'color',n:'Colour-coded parts',light:'Match illumination to part colour; add a bandpass filter.',bl:1,s:[['hue',{h:0,w:20},'Selects one colour (0° is red). Change the hue to select others.'],['open',{r:1},'Drops stray pixels.']]},
+{id:'noisy',n:'Noisy / dim scene',light:'Add light rather than sensor gain, since gain amplifies noise.',bl:1,s:[['median',{r:2},'Kills speckle while preserving edges.'],['gauss',{s:1},'Further smoothing.'],['otsu',{inv:0},'Clean segmentation.']]}
+];
+// ---------- samples
+const SMP=['Shiny metal washers','PCB with chip','Low-contrast parts','Printed label','Colour-coded balls','Scratched & chipped paint'];
+function sample(i){const w=400,h=300,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');let g;
+if(i==0){g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#666');g.addColorStop(1,'#1b1b1b');x.fillStyle=g;x.fillRect(0,0,w,h);
+[[125,150],[285,145]].forEach(([a,b])=>{const r=x.createRadialGradient(a-30,b-30,5,a,b,75);r.addColorStop(0,'#fff');r.addColorStop(.5,'#9ab');r.addColorStop(1,'#456');x.fillStyle=r;x.beginPath();x.arc(a,b,70,0,7);x.moveTo(a+25,b);x.arc(a,b,25,0,7);x.fill('evenodd')});
+x.strokeStyle='rgba(255,255,255,.8)';x.lineWidth=1.2;x.beginPath();x.moveTo(250,120);x.lineTo(310,185);x.moveTo(255,170);x.lineTo(300,140);x.stroke()}
+if(i==1){x.fillStyle='#1f6b3a';x.fillRect(0,0,w,h);x.strokeStyle='#d9b44a';x.lineWidth=4;x.beginPath();for(let k=0;k<7;k++){x.moveTo(20,30+k*40);x.lineTo(150,30+k*40);x.lineTo(190,70+k*30);x.lineTo(380,70+k*30)}x.stroke();x.fillStyle='#d9b44a';for(let k=0;k<8;k++){x.beginPath();x.arc(30+k*46,270,9,0,7);x.fill()}x.fillStyle='#111';x.fillRect(150,100,110,90);x.fillStyle='#bbb';for(let k=0;k<6;k++){x.fillRect(142,108+k*14,8,6);x.fillRect(260,108+k*14,8,6)}}
+if(i==2){x.fillStyle='#6a6a6a';x.fillRect(0,0,w,h);x.fillStyle='#7a7a7a';[[90,90,.3],[240,80,-.4],[160,200,.8],[310,215,.1]].forEach(([a,b,r])=>{x.save();x.translate(a,b);x.rotate(r);x.fillRect(-45,-18,90,36);x.beginPath();x.arc(-45,0,18,0,7);x.fill();x.restore()})}
+if(i==3){x.fillStyle='#d4d4cc';x.fillRect(0,0,w,h);x.fillStyle='#3d3d3d';x.font='bold 34px monospace';x.fillText('LOT 4821-B',40,100);x.font='24px monospace';x.fillText('EXP 09/27  QTY 120',40,160);x.fillRect(40,190,300,6);x.fillRect(40,210,220,6);g=x.createRadialGradient(w,h,20,w,h,420);g.addColorStop(0,'rgba(0,0,0,.6)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,w,h)}
+if(i==4){x.fillStyle='#e6e6e6';x.fillRect(0,0,w,h);[['#d62828',70,90],['#2a9d3f',200,80],['#2459d6',320,100],['#d62828',120,210],['#e9c21a',270,215]].forEach(([c,a,b])=>{x.fillStyle=c;x.beginPath();x.arc(a,b,40,0,7);x.fill()})}
+if(i==5){let sd=11;const rr=()=>(sd=(sd*1664525+1013904223)>>>0)/4294967296;
+g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#41719f');g.addColorStop(1,'#2b4d78');x.fillStyle=g;x.fillRect(0,0,w,h);
+for(let k=0;k<9000;k++){x.fillStyle=rr()<.5?`rgba(255,255,255,${rr()*.07})`:`rgba(0,0,20,${rr()*.08})`;x.fillRect(rr()*w,rr()*h,1,1)}
+const chip=(cx0,cy0,r)=>{const pts=[];for(let a=0;a<6.28;a+=.7)pts.push([cx0+Math.cos(a)*r*(.6+rr()*.7),cy0+Math.sin(a)*r*(.6+rr()*.7)]);
+const path=s=>{x.beginPath();pts.forEach(([a,b],j)=>{const X=cx0+(a-cx0)*s,Y=cy0+(b-cy0)*s;j?x.lineTo(X,Y):x.moveTo(X,Y)});x.closePath()};
+path(1.12);x.fillStyle='#8fb4dc';x.fill();path(1);x.fillStyle='#9b9a94';x.fill();path(.55);x.fillStyle='#74503b';x.fill()};
+[[92,82,16],[300,205,22],[205,238,11],[335,72,9],[60,225,8]].forEach(c=>chip(...c));
+x.lineCap='round';const scr=(x0,y0,x1,y1,wd,al,bend)=>{x.strokeStyle=`rgba(214,224,236,${al})`;x.lineWidth=wd;x.beginPath();x.moveTo(x0,y0);x.quadraticCurveTo((x0+x1)/2+bend,(y0+y1)/2-bend,x1,y1);x.stroke()};
+scr(20,40,230,120,1.4,.8,14);scr(120,270,380,150,1.2,.7,-20);scr(240,20,300,140,1,.45,8);scr(30,180,190,230,1.6,.85,0);scr(340,250,390,120,1,.5,6);scr(150,60,260,40,1,.35,0);
+x.strokeStyle='#0b1626';x.lineWidth=1.6;x.beginPath();let cx1=250,cy1=40;x.moveTo(cx1,cy1);const br=[];for(let k=0;k<16;k++){cx1+=(rr()-.35)*14;cy1+=9+rr()*7;x.lineTo(cx1,cy1);if(k%4==2)br.push([cx1,cy1])}x.stroke();
+x.lineWidth=1.1;br.forEach(([bx,by])=>{x.beginPath();x.moveTo(bx,by);let X=bx,Y=by;for(let k=0;k<5;k++){X+=8+rr()*6;Y+=(rr()-.4)*9;x.lineTo(X,Y)}x.stroke()});
+g=x.createRadialGradient(w*.4,h*.4,60,w*.5,h*.5,330);g.addColorStop(0,'rgba(255,255,255,.10)');g.addColorStop(1,'rgba(0,0,0,.28)');x.fillStyle=g;x.fillRect(0,0,w,h)}
+return x.getImageData(0,0,w,h)}
+
+const ENGINE_SRC=document.getElementById('engine-src').textContent;
+const {F,FM,cx,normRoi,makeRunner,crop}=new Function(ENGINE_SRC+'\nreturn {F,FM,cx,normRoi,makeRunner,crop}')();
+const $=s=>document.querySelector(s);
+let pipe=[],SRC=null,live=false,vid=null,stream=null,part=null,sourceMode='sample';
+const c0=$('#c0'),c1=$('#c1');
+// ---------- engine: same source runs on the main thread (UI metadata) and in a Web Worker (heavy work)
+let ROI=null,drag=null,srcId=0,srcSent=-1,seq=0,inflight=false,dirty=false,last=null,worker=null,localRunner=null,busyT=0;
+const setSrc=im=>{SRC=im;srcId++};
+const WORKER_MAIN=`
+const __r=makeRunner();
+const __pk=im=>im&&{w:im.width,h:im.height,buf:im.data.buffer};
+onmessage=e=>{const m=e.data;try{
+if(m.t==='src'){__r.setSource(m.sid,new ImageData(new Uint8ClampedArray(m.buf),m.w,m.h));return}
+const o=__r.run(m.req),tr=[o.cur.data.buffer];if(o.noisy)tr.push(o.noisy.data.buffer);
+postMessage({t:'res',seq:m.seq,o:{...o,cur:__pk(o.cur),noisy:__pk(o.noisy)}},tr)}
+catch(err){postMessage({t:'err',seq:m.seq,msg:String(err&&err.message||err)})}};`;
+function initWorker(){try{const url=URL.createObjectURL(new Blob([ENGINE_SRC+WORKER_MAIN],{type:'text/javascript'}));
+worker=new Worker(url);worker.onmessage=onRes;worker.onerror=()=>useMainThread()}catch(e){useMainThread()}}
+function useMainThread(){if(worker){try{worker.terminate()}catch(e){}}worker=null;localRunner=makeRunner();srcSent=-1;inflight=false;dirty=false;queue()}
+const toIm=x=>x&&new ImageData(new Uint8ClampedArray(x.buf),x.w,x.h);
+function onRes(e){const m=e.data;inflight=false;clearTimeout(busyT);c1.classList.remove('busy');
+if(m.t==='err'){$('#info').textContent='Filter error: '+m.msg}
+else{const o={...m.o,cur:toIm(m.o.cur),noisy:toIm(m.o.noisy)};last=o;finish(o);report(o)}
+if(dirty){dirty=false;run()}}
+// ---------- run
+let pend=0;const queue=()=>{if(!pend)pend=requestAnimationFrame(()=>{pend=0;run()})};
+function show(cv,im){cv.width=im.width;cv.height=im.height;cv.getContext('2d').putImageData(im,0,0)}
+const curReq=()=>({noise:+$('#noise').value,roi:ROI&&ROI.w>8&&ROI.h>8?{...ROI}:null,pipe:pipe.map(s=>({id:s.id,p:{...s.p}})),blobs:$('#bl').checked,minA:+$('#minA').value||1});
+function drawOrig(){show(c0,SRC);const x0=c0.getContext('2d'),R=normRoi(ROI,SRC.width,SRC.height),D=drag?ROI:R,k=Math.max(1,SRC.width/400);
+if(D&&D.w>0&&D.h>0){x0.fillStyle='rgba(0,0,0,.5)';x0.fillRect(0,0,c0.width,D.y);x0.fillRect(0,D.y+D.h,c0.width,c0.height-D.y-D.h);x0.fillRect(0,D.y,D.x,D.h);x0.fillRect(D.x+D.w,D.y,c0.width-D.x-D.w,D.h);x0.strokeStyle='#2dd4bf';x0.lineWidth=2*k;x0.setLineDash([6*k,4*k]);x0.strokeRect(D.x,D.y,D.w,D.h);x0.setLineDash([])}
+$('#roiTxt').textContent=D&&D.w>8?`box ${Math.round(D.w)}×${Math.round(D.h)}`:'drag to draw a box'}
+function run(){if(!SRC)return;drawOrig();if(inflight){dirty=true;return}
+const req=curReq();
+if(srcSent!==srcId){if(worker){const c=SRC.data.slice();worker.postMessage({t:'src',sid:srcId,buf:c.buffer,w:SRC.width,h:SRC.height},[c.buffer])}else localRunner.setSource(srcId,SRC);srcSent=srcId}
+if(worker){inflight=true;worker.postMessage({t:'run',seq:++seq,req});clearTimeout(busyT);busyT=setTimeout(()=>c1.classList.add('busy'),150)}
+else{try{const o=localRunner.run(req);last=o;finish(o);report(o)}catch(err){$('#info').textContent='Filter error: '+err.message}}}
+// Draw Result: paste ROI, apply before/after split, overlay blob boxes.
+function finish(o){const R=o.roi,input=o.noisy||SRC,zm=R&&$('#zoom').checked;let out=o.cur,ox=0,oy=0;const base=zm?crop(input,R):input;
+if(R&&!zm){out=new ImageData(new Uint8ClampedArray(input.data),input.width,input.height);for(let y=0;y<R.h;y++)out.data.set(o.cur.data.subarray(y*R.w*4,(y+1)*R.w*4),((R.y+y)*input.width+R.x)*4);ox=R.x;oy=R.y}
+else out=new ImageData(new Uint8ClampedArray(out.data),out.width,out.height);
+const W=out.width,H=out.height,xs=Math.round(+$('#split').value/100*W);
+if(xs>0)for(let y=0;y<H;y++)out.data.set(base.data.subarray(y*W*4,(y*W+xs)*4),y*W*4);
+show(c1,out);const x=c1.getContext('2d'),k=Math.max(1,W/400);
+if(o.blobs){x.strokeStyle='#ff3b30';x.lineWidth=2*k;o.blobs.slice(0,300).forEach(q=>{if(q[0]+ox+q[2]/2>=xs)x.strokeRect(q[0]+ox-1,q[1]+oy-1,q[2]+2,q[3]+2)})}
+if(xs>0){x.save();x.fillStyle='rgba(0,0,0,.55)';x.fillRect(xs-1.5*k,0,3*k,H);x.fillStyle='#fff';x.fillRect(xs-k,0,2*k,H);
+x.beginPath();x.arc(xs,H/2,10*k,0,7);x.fill();x.fillStyle='#0a7d6e';x.beginPath();x.moveTo(xs-6*k,H/2);x.lineTo(xs-2.5*k,H/2-4*k);x.lineTo(xs-2.5*k,H/2+4*k);x.fill();x.beginPath();x.moveTo(xs+6*k,H/2);x.lineTo(xs+2.5*k,H/2-4*k);x.lineTo(xs+2.5*k,H/2+4*k);x.fill();
+x.font=`700 ${11*k}px system-ui,sans-serif`;x.textBaseline='top';const tag=(t,px,al)=>{x.textAlign=al;const w=x.measureText(t).width;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(al=='left'?px-4*k:px-w-4*k,6*k,w+8*k,17*k);x.fillStyle='#fff';x.fillText(t,px,9*k)};
+if(xs>80*k)tag('ORIGINAL',10*k,'left');if(W-xs>70*k)tag('RESULT',W-10*k,'right');x.restore()}}
+function report(o){const R=o.roi;let msg=pipe.length?`${R?'box · ':''}${pipe.length} step(s), ${o.ms} ms${o.hit?` · ${o.hit} cached`:''}${worker?'':' · main thread'}`:'Add filters in step 3.';
+if(o.blobs)msg+=` · <span class="ok">${o.blobs.length} blob(s)</span>, total area ${o.blobs.reduce((a,q)=>a+q[4],0)} px`;
+$('#info').innerHTML=msg;syncRecipe();
+document.querySelectorAll('#pipe .stwarn').forEach((el,i)=>{const w=(o.warn||[])[i];el.hidden=!w;el.textContent=w?'⚠ '+w:''});updateWorkspace()}
+// ---------- recipe v2: pipeline + region + noise + part + blob + view settings (region saved as fractions, so it survives a resolution change)
+const r4=v=>Math.round(v*1e4)/1e4;
+function getRecipe(){const R=SRC&&ROI&&ROI.w>8&&ROI.h>8?normRoi(ROI,SRC.width,SRC.height):null;
+return{v:2,pipe:pipe.map(s=>({id:s.id,p:s.p})),roi:R&&{x:r4(R.x/SRC.width),y:r4(R.y/SRC.height),w:r4(R.w/SRC.width),h:r4(R.h/SRC.height)},noise:+$('#noise').value,part:part?part.id:null,blobs:$('#bl').checked,minA:+$('#minA').value||1,zoom:$('#zoom').checked,split:+$('#split').value}}
+function syncRecipe(){if(document.activeElement!==$('#rj'))$('#rj').value=JSON.stringify(getRecipe())}
+function loadRecipe(txt){const j=JSON.parse(txt),r=Array.isArray(j)?{v:1,pipe:j}:j;if(!r||!Array.isArray(r.pipe))throw new Error('no pipe');
+pipe=r.pipe.filter(s=>s&&FM[s.id]).map(s=>{const p={};FM[s.id].P.forEach(q=>p[q.k]=q.d);if(s.id==='cd'&&s.p&&s.p.k!==undefined&&s.p.m===undefined)p.m=s.p.k?1:0;return{id:s.id,p:Object.assign(p,s.p)}});
+if(r.v>=2){const n=cx(+r.noise||0,0,+$('#noise').max||100);$('#noise').value=n;$('#noiseVal').textContent=n;
+$('#bl').checked=!!r.blobs;if(r.minA)$('#minA').value=r.minA;$('#zoom').checked=!!r.zoom;setSplit(cx(+r.split||0,0,100),true);
+if(r.part&&PARTS.some(p=>p.id==r.part)){$('#part').value=r.part;$('#part').onchange()}
+const f=r.roi;ROI=f&&SRC?{x:Math.round(f.x*SRC.width),y:Math.round(f.y*SRC.height),w:Math.round(f.w*SRC.width),h:Math.round(f.h*SRC.height)}:null}
+drawPipe();queue()}
+function setSplit(v,skip){$('#split').value=v;$('#splitVal').textContent=v?v+'%':'off';if(!skip){if(last)finish(last);syncRecipe()}}
+function updateWorkspace(){const src=$('#wsSource'),size=$('#wsSize'),roi=$('#wsRoi'),ps=$('#wsPipe'),tip=$('#wsTip');if(!src)return;src.textContent=sourceMode==='upload'?'Uploaded image':sourceMode==='webcam'?'Webcam':'Built-in sample';size.textContent=SRC?`${SRC.width} × ${SRC.height}`:'—';roi.textContent=ROI&&ROI.w>8&&ROI.h>8?`${Math.round(ROI.w)} × ${Math.round(ROI.h)} px`:'Full image';ps.textContent=`${pipe.length} filter${pipe.length===1?'':'s'}`;$('#noise').disabled=false;const nl=+$('#noise').value;$('#noiseStatus').textContent=nl===0?'Noise is off; the source image is unchanged.':`Simulating sensor noise at level ${nl} on this ${sourceMode==='upload'?'uploaded image':sourceMode==='webcam'?'webcam frame':'sample'}.`;$('#noiseHelp').textContent='Adds simulated sensor noise to the processing input. The original image is kept unchanged.';tip.textContent=!SRC?'Choose an image to begin.':pipe.length?`Your pipeline has ${pipe.length} filter${pipe.length===1?'':'s'}. Continue adjusting and compare the Result preview.`:'Image loaded. Mark a region in Step 2 or add filters in Step 3.'} 
+// ---------- pipeline UI
+function showToast(message){const t=$('#toast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(window.__visionToastTimer);window.__visionToastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+function addStep(id,ov){const f=FM[id],p={};f.P.forEach(q=>p[q.k]=q.d);Object.assign(p,ov||{});pipe.push({id,p});drawPipe();queue();showToast(`${f.n} added to your pipeline`)}
+function drawPipe(){const el=$('#pipe');el.innerHTML='';if(!pipe.length){el.innerHTML='<div class="mu">Empty. Add filters from the catalog or apply a recommended recipe.</div>'}
+pipe.forEach((s,i)=>{const f=FM[s.id],d=document.createElement('div');d.className='st';
+d.innerHTML=`<div class="row" style="justify-content:space-between"><b>${i+1}. ${f.n}</b><span><button data-a="u">↑</button> <button data-a="d">↓</button> <button data-a="x">✕</button></span></div><div class="mu stwarn" hidden style="color:var(--wa)"></div>`;
+if(s.id==='cd'||s.id==='hue'){const pb=document.createElement('button');pb.type='button';pb.className='pick';pb.textContent='💧 Pick colour from image';pb.onclick=()=>startPick(s);d.appendChild(pb)}
+f.P.forEach(q=>{const r=document.createElement('div');r.className='sl';
+if(q.o){r.innerHTML=`<span>${q.l}</span><select>${q.o.map((t,v)=>`<option value="${v}"${s.p[q.k]==v?' selected':''}>${t}</option>`).join('')}</select><span></span>`;r.querySelector('select').onchange=e=>{s.p[q.k]=+e.target.value;queue()};d.appendChild(r);return}
+r.innerHTML=`<span>${q.l}</span><input type="range" min="${q.a}" max="${q.b}" step="${q.s}" value="${s.p[q.k]}"><span>${s.p[q.k]}</span>`;
+const inp=r.querySelector('input'),lb=r.lastElementChild;inp.oninput=()=>{s.p[q.k]=+inp.value;lb.textContent=inp.value;queue()};d.appendChild(r)});
+d.querySelectorAll('button[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(a=='x')pipe.splice(i,1);if(a=='u'&&i>0)[pipe[i-1],pipe[i]]=[pipe[i],pipe[i-1]];if(a=='d'&&i<pipe.length-1)[pipe[i+1],pipe[i]]=[pipe[i],pipe[i+1]];drawPipe();queue()});el.appendChild(d)})}
+$('#clr').onclick=()=>{pipe=[];drawPipe();queue()};
+// ---------- catalog + recommender
+const cats=[...new Set(F.map(f=>f.c))];
+const CATINFO={
+'Tone':{icon:'◐',desc:'Improve overall image appearance by adjusting brightness, contrast and pixel intensity.'},
+'Noise':{icon:'▦',desc:'Suppress sensor noise and speckle, or restore fine details after smoothing.'},
+'Edges':{icon:'⌁',desc:'Highlight object boundaries, outlines, scratches, corners and fine surface details.'},
+'Threshold':{icon:'◩',desc:'Convert grayscale images into foreground and background regions for segmentation.'},
+'Morphology':{icon:'▧',desc:'Refine binary shapes: remove small regions, expand objects, close gaps and extract outlines.'},
+'Lighting':{icon:'☼',desc:'Compensate for shadows, gradients and uneven illumination across the image.'},
+'Colour':{icon:'◉',desc:'Separate objects by hue or inspect individual red, green and blue image channels.'},
+'Defects':{icon:'✦',desc:'Find and mark scratches, cracks, chips and paint damage, then overlay them on the photo.'},
+'Texture':{icon:'▤',desc:'Measure local surface variation and emphasize texture differences or fine detail.'}
+};
+function drawCat(){const q=$('#q').value.trim().toLowerCase(),rs=part?part.s.map(s=>s[0]):[],el=$('#cl');el.innerHTML='';
+$('#filterCount').textContent=`${F.length} filters · ${cats.length} categories`;
+cats.forEach((k,idx)=>{const all=F.filter(f=>f.c===k),fs=all.filter(f=>(f.n+' '+f.d+' '+f.c).toLowerCase().includes(q));if(q&&!fs.length&&!k.toLowerCase().includes(q))return;
+const det=document.createElement('details');det.className='catGroup';if(q)det.open=true;
+const info=CATINFO[k]||{icon:'◈',desc:'Explore filters in this category.'};
+const summary=document.createElement('summary');summary.innerHTML=`<span class="catIcon">${info.icon}</span><span class="catSummary"><b>${k}</b><small>${info.desc}</small></span><span class="catCount">${all.length} filters</span>`;det.appendChild(summary);
+const body=document.createElement('div');body.className='catBody';
+fs.forEach(f=>{const d=document.createElement('div');d.className='it'+(rs.includes(f.id)?' rec':'');const infoBox=document.createElement('div');infoBox.style.minWidth='0';const title=document.createElement('b');title.textContent=f.n;if(rs.includes(f.id)){const tag=document.createElement('span');tag.className='tag';tag.textContent='recommended';title.appendChild(tag)}const desc=document.createElement('div');desc.className='mu';desc.textContent=f.d;infoBox.append(title,desc);const add=document.createElement('button');add.type='button';add.textContent='+ Add';add.setAttribute('aria-label','Add '+f.n+' filter');add.onclick=()=>addStep(f.id);d.append(infoBox,add);body.appendChild(d)});
+if(!fs.length){const none=document.createElement('p');none.className='mu';none.textContent='No filters in this category match your search.';body.appendChild(none)}
+det.append(summary,body);el.appendChild(det)});
+if(!el.children.length)el.innerHTML='<p class="mu">No matching categories or filters found. Try another search.</p>';
+}
+$('#q').oninput=drawCat;
+$('#part').innerHTML='<option value="">Choose a part type…</option>'+PARTS.map(p=>`<option value="${p.id}">${p.n}</option>`).join('');
+$('#part').onchange=()=>{part=PARTS.find(p=>p.id==$('#part').value)||null;const r=$('#rec');if(!part){r.innerHTML='';drawCat();return}
+r.innerHTML=`<div class="mu"><b>Lighting tip:</b> ${part.light}</div><ol>${part.s.map(s=>`<li><b>${FM[s[0]].n}</b><div class="mu">${s[2]}</div></li>`).join('')}</ol><button class="p" id="app">Apply this recipe</button>`;
+$('#app').onclick=()=>{pipe=[];part.s.forEach(s=>{const f=FM[s[0]],p={};f.P.forEach(q=>p[q.k]=q.d);Object.assign(p,s[1]);pipe.push({id:s[0],p})});$('#bl').checked=!!part.bl;drawPipe();queue();go(2);showToast(`${pipe.length} recommended filters added`);
+const m={metal:0,pcb:1,lowc:2,ocr:3,defect:0,glass:0,color:4,noisy:2,scratch:5,paint:5}[part.id];if(!live&&m!=null){$('#src').value=m;setSample(m)}};drawCat()};
+// ---------- sources
+$('#src').innerHTML=SMP.map((s,i)=>`<option value="${i}">${s}</option>`).join('');
+function setSample(i){stopCam();sourceMode='sample';setSrc(sample(+i));queue();updateWorkspace()}
+$('#src').onchange=()=>setSample($('#src').value);$('#noise').oninput=()=>{ $('#noiseVal').textContent=$('#noise').value;queue();updateWorkspace(); };
+$('#bl').onchange=queue;$('#minA').oninput=queue;
+$('#up').onclick=()=>$('#file').click();
+let upImg=null;
+function fitTo(w0,h0,max){const s=Math.min(1,max/Math.max(w0,h0));return[Math.max(1,Math.round(w0*s)),Math.max(1,Math.round(h0*s))]}
+function loadUpload(){if(!upImg)return;const[w,h]=fitTo(upImg.naturalWidth,upImg.naturalHeight,+$('#res').value),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(upImg,0,0,w,h);setSrc(x.getImageData(0,0,w,h));queue();updateWorkspace()}
+$('#res').onchange=()=>{if(sourceMode==='upload')loadUpload()};
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;stopCam();sourceMode='upload';const im=new Image();im.onload=()=>{upImg=im;ROI=null;loadUpload()};im.src=URL.createObjectURL(f)};
+async function startCam(){try{stream=await navigator.mediaDevices.getUserMedia({video:true});sourceMode='webcam';vid=document.createElement('video');vid.srcObject=stream;vid.muted=true;await vid.play();live=true;$('#cam').textContent='Stop webcam';loop()}catch(e){$('#info').textContent='Webcam unavailable here (permission denied or blocked in this view). Try Upload instead.'}}
+function stopCam(){live=false;$('#cam').textContent='Start webcam';if(stream)stream.getTracks().forEach(t=>t.stop());stream=null}
+let lt=0;function loop(){if(!live)return;const n=performance.now();if(n-lt>150&&vid.videoWidth){lt=n;const[w,h]=fitTo(vid.videoWidth,vid.videoHeight,Math.min(+$('#res').value,800)),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(vid,0,0,w,h);setSrc(x.getImageData(0,0,w,h));queue()}requestAnimationFrame(loop)}
+$('#cam').onclick=()=>live?(stopCam(),setSample($('#src').value)):startCam();
+// Canvases are letterboxed (object-fit:contain), so map the pointer through the image's real on-screen rectangle, not the element box.
+function shown(cv){const r=cv.getBoundingClientRect(),k=Math.min(r.width/cv.width,r.height/cv.height),w=cv.width*k,h=cv.height*k;return{l:r.left+(r.width-w)/2,t:r.top+(r.height-h)/2,w,h}}
+const pt=e=>{const r=shown(c0);return[cx((e.clientX-r.l)*c0.width/r.w,0,c0.width),cx((e.clientY-r.t)*c0.height/r.h,0,c0.height)]};
+let pickStep=null;
+function startPick(s){pickStep=s;c0.style.cursor='copy';c0.classList.add('picking');showToast('Click the part colour on the Original image');go(2)}
+function endPick(){pickStep=null;c0.style.cursor='crosshair';c0.classList.remove('picking')}
+function doPick(e){const[x,y]=pt(e),X=Math.round(x),Y=Math.round(y),rad=Math.max(1,Math.round(SRC.width/200));let r=0,g=0,b=0,n=0;
+for(let j=-rad;j<=rad;j++)for(let i=-rad;i<=rad;i++){const xx=cx(X+i,0,SRC.width-1),yy=cx(Y+j,0,SRC.height-1),k=(yy*SRC.width+xx)*4;r+=SRC.data[k];g+=SRC.data[k+1];b+=SRC.data[k+2];n++}
+r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
+if(pickStep.id==='cd'){Object.assign(pickStep.p,{r,g,b})}
+else{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),c=mx-mn;let H=0;if(c){H=mx==r?((g-b)/c)%6:mx==g?(b-r)/c+2:(r-g)/c+4;H=Math.round((H*60+360)%360)}pickStep.p.h=H}
+showToast(`Picked rgb(${r}, ${g}, ${b})`);endPick();drawPipe();queue()}
+c0.onpointerdown=e=>{if(pickStep){doPick(e);return}c0.setPointerCapture(e.pointerId);drag=pt(e);ROI=null};
+c0.onpointermove=e=>{if(!drag)return;const p=pt(e);ROI={x:Math.round(Math.min(drag[0],p[0])),y:Math.round(Math.min(drag[1],p[1])),w:Math.round(Math.abs(p[0]-drag[0])),h:Math.round(Math.abs(p[1]-drag[1]))};queue()};
+c0.onpointerup=()=>{drag=null;if(ROI&&(ROI.w<9||ROI.h<9))ROI=null;queue()};
+$('#clrroi').onclick=()=>{ROI=null;queue()};$('#ctr').onclick=()=>{const w=SRC.width,h=SRC.height;ROI={x:w/4|0,y:h/4|0,w:w/2|0,h:h/2|0};queue()};
+$('#zoom').onchange=queue;$('#split').oninput=()=>setSplit(+$('#split').value);
+let sdrag=false;const spos=e=>{const r=shown(c1);return Math.round(cx((e.clientX-r.l)/r.w*100,0,100))};
+c1.style.touchAction='none';c1.onpointerdown=e=>{c1.setPointerCapture(e.pointerId);sdrag=true;setSplit(spos(e))};
+c1.onpointermove=e=>{if(sdrag)setSplit(spos(e))};c1.onpointerup=()=>{sdrag=false};c1.ondblclick=()=>setSplit(0);
+$('#cp').onclick=()=>{const r=$('#rj');r.select();try{navigator.clipboard.writeText(r.value)}catch(e){}};
+$('#ld').onclick=()=>{try{loadRecipe($('#rj').value);showToast('Recipe loaded')}catch(e){$('#info').textContent='Could not read that recipe.'}};
+const ST=['1 Source','2 Part & region','3 Filters','4 Inspect'];
+function go(n){document.querySelectorAll('.stp').forEach(e=>e.hidden=+e.dataset.s!==n);[...$('#tabs').children].forEach((t,i)=>t.classList.toggle('on',i==n))}
+$('#tabs').innerHTML=ST.map((s,i)=>`<div class="tab" data-t="${i}">${s}</div>`).join('');
+$('#tabs').onclick=e=>{const t=e.target.closest('.tab');if(t)go(+t.dataset.t)};
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));go(0);
+let hv=null;const BX='.card,.st,.it,.tab,button,select,input,textarea,canvas';
+function setHv(el){if(el===hv)return;if(hv)hv.classList.remove('hv');hv=el;if(el)el.classList.add('hv')}
+document.addEventListener('pointerover',e=>{if(e.pointerType=='mouse')setHv(e.target.closest?e.target.closest(BX):null)});
+document.addEventListener('pointerleave',()=>setHv(null));
+function setTheme(t,save){document.documentElement.dataset.theme=t;if(save)try{localStorage.setItem('vl-theme',t)}catch(e){}}
+let th0=null;try{th0=localStorage.getItem('vl-theme')}catch(e){}
+setTheme(th0||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+$('#tg').onclick=()=>setTheme(document.documentElement.dataset.theme=='dark'?'light':'dark',1);
+initWorker();setSample(0);drawPipe();drawCat();
+
+// ---------- 8-bit header scenery: procedural pixel-art sunset, drawn on a tiny canvas and scaled up with hard pixels.
+(function(){
+const hero=document.querySelector('.brand-hero');if(!hero)return;
+const cv=document.createElement('canvas');cv.className='scene';cv.setAttribute('aria-hidden','true');hero.prepend(cv);
+const ctx=cv.getContext('2d'),S=3; // S = on-screen size of one "8-bit pixel"
+const px=h=>{const n=parseInt(h.slice(1),16);return(255<<24)|((n&255)<<16)|(n&0xff00)|(n>>16)}; // #rrggbb -> ABGR
+const C={sky:['#120d2b','#1d1544','#2f1d5e','#4a2672','#6e2f80','#a33f80','#d4586f','#f07f5c','#f9ab5e','#fdd480'].map(px),
+ star:px('#fff4d0'),star2:px('#9ed0ff'),sun1:px('#fff1b0'),sun2:px('#ffd066'),sun3:px('#ffae4a'),halo1:px('#f9ab5e'),halo2:px('#d4586f'),
+ cloudA:px('#f08f9a'),cloudB:px('#c25c8a'),far:px('#2c1c63'),snow:px('#c4b5f5'),mid:px('#26418a'),near:px('#1c5560'),
+ tree:px('#0c353b'),treeHi:px('#17594f'),ground:px('#07161d'),grass:px('#1c7449'),bird:px('#ffd9a8')};
+const BAYER=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
+let seed=7;const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+const tri=t=>Math.abs(((t%2)+2)%2-1);
+let W,H,GY,img,u32,sky,stars,clouds,trees,birds,R,SX,SY,raf=0,t0=performance.now(),lastDraw=0;
+function build(){
+ const r=hero.getBoundingClientRect();W=Math.ceil(r.width/S);H=Math.ceil(r.height/S);GY=Math.round(H*.80);
+ cv.width=W;cv.height=H;cv.style.width=W*S+'px';cv.style.height=H*S+'px';img=ctx.createImageData(W,H);u32=new Uint32Array(img.data.buffer);
+ // dithered sky
+ sky=new Uint32Array(W*H);const n=C.sky.length-1;
+ for(let y=0;y<H;y++){const p=Math.min(1,y/(GY-1))**1.15*n,i=Math.min(n-1,Math.floor(p)),f=p-i;
+  for(let x=0;x<W;x++)sky[y*W+x]=C.sky[i+(f>BAYER[(y&3)*4+(x&3)]/16?1:0)]}
+ seed=7;
+ stars=Array.from({length:Math.round(W/9)},(_,i)=>({x:Math.floor(rnd()*W),y:Math.floor(rnd()*GY*.55),ph:Math.floor(rnd()*7),b:rnd()<.2,c:rnd()<.3}));
+ clouds=Array.from({length:Math.max(3,Math.round(W/70))},(_,i)=>({x:rnd()*(W+60),y:Math.round(H*(.12+rnd()*.34)),w:12+Math.floor(rnd()*14),sp:i%2?2.2:3.6}));
+ const P=420;trees=[];for(let x=3;x<P;x+=7+Math.floor(rnd()*9))trees.push({x,h:9+Math.floor(rnd()*7),v:rnd()<.5});trees.P=P;
+ birds=[0,1,2].map(i=>({dx:-i*9,dy:i%2?5:-3*i,ph:i}));
+ R=Math.max(6,Math.min(10,Math.round(H*.17)));SX=Math.round(W*.74);SY=Math.round(H*.30);
+}
+const mtn=(x,A,per,o)=>Math.round(A*(.5*tri(x/per+o)+.3*tri(x/(per*.43)+o*2.1)+.2*tri(x/(per*.19)+o*3.3)));
+function frame(t){
+ u32.set(sky);
+ // stars (twinkle)
+ const tw=Math.floor(t*2);
+ for(const s of stars){if((tw+s.ph)%7===0)continue;const c=s.c?C.star2:C.star;u32[s.y*W+s.x]=c;
+  if(s.b&&s.x>0&&s.x<W-1&&s.y>0){u32[s.y*W+s.x-1]=c;u32[s.y*W+s.x+1]=c;u32[(s.y-1)*W+s.x]=c;u32[(s.y+1)*W+s.x]=c}}
+ // sun: halo (checker dither), body, scanline cut-outs that slowly crawl
+ for(let y=Math.max(0,SY-R-7);y<Math.min(GY,SY+R+7);y++)for(let x=SX-R-7;x<=SX+R+7;x++){if(x<0||x>=W)continue;
+  const d=Math.hypot(x-SX,y-SY+.5);
+  if(d<=R){const row=y-(SY-R);if(row>R&&((row+Math.floor(t*1.5))%4)===0)continue;u32[y*W+x]=y<SY-R*.35?C.sun1:y<SY+R*.3?C.sun2:C.sun3}
+  else if(d<=R+3.5&&((x+y)&1)===0)u32[y*W+x]=C.halo1;else if(d<=R+7&&((x+y)&1)===0&&((x>>1)+(y>>1)&1)===0)u32[y*W+x]=C.halo2}
+ // clouds
+ for(const c of clouds){const cx=Math.floor(((c.x-t*c.sp)%(W+60)+(W+60))%(W+60))-30,rows=[[.45,0],[.8,1],[1,2]];
+  rows.forEach(([f,r],i)=>{const w=Math.round(c.w*f),x0=cx+Math.round((c.w-w)/2),y=c.y+i;
+   for(let x=x0;x<x0+w;x++)if(x>=0&&x<W&&y>=0&&y<GY)u32[y*W+x]=i==2?C.cloudB:C.cloudA})}
+ // birds
+ const bx=Math.floor(((t*9)%(W+90))-45);
+ for(const b of birds){const x=bx+b.dx,y=Math.round(H*.3)+b.dy,up=((Math.floor(t*4)+b.ph)&1)===0;
+  for(const[dx,dy]of up?[[-2,-1],[-1,0],[0,0],[1,0],[2,-1]]:[[-2,0],[-1,1],[0,0],[1,1],[2,0]]){const X=x+dx,Y=y+dy;if(X>=0&&X<W&&Y>=0&&Y<GY)u32[Y*W+X]=C.bird}}
+ // parallax land layers (far mountains -> hills -> trees -> ground)
+ const so=Math.floor(t*1.6),mo=Math.floor(t*3.2),no=Math.floor(t*5.6),to=Math.floor(t*11);
+ for(let x=0;x<W;x++){
+  const hf=mtn(x+so,H*.46,190,.3)+3,hm=mtn(x+mo,H*.26,120,1.7)+2,hn=mtn(x+no,H*.14,70,2.9)+1;
+  for(let y=GY-hf;y<GY;y++)if(y>=0)u32[y*W+x]=(hf>H*.34&&y<GY-hf+2)?C.snow:C.far;
+  for(let y=GY-hm;y<GY;y++)u32[y*W+x]=C.mid;
+  for(let y=GY-hn;y<GY;y++)u32[y*W+x]=C.near}
+ for(const tr of trees){for(let rep=-1;rep<=Math.ceil(W/trees.P)+1;rep++){const bx2=tr.x+rep*trees.P-(to%trees.P);if(bx2<-8||bx2>W+8)continue;
+  for(let r=0;r<tr.h;r++){const y=GY-1-r,half=Math.max(0,Math.min(4,Math.ceil((tr.h-r)/2.6)))-(r<2?1:0)+(tr.v&&r%4==3?1:0),hw=r<2?0:Math.min(4,1+Math.floor((tr.h-r)*.42)+(r%4==0?1:0));
+   for(let dx=-hw;dx<=hw;dx++){const X=bx2+dx;if(X>=0&&X<W&&y>=0)u32[y*W+X]=(dx<0&&(r&1))?C.treeHi:C.tree}}}}
+ for(let x=0;x<W;x++){for(let y=GY;y<H;y++)u32[y*W+x]=C.ground;u32[GY*W+x]=((x+to)%5===0)?C.ground:C.grass}
+ ctx.putImageData(img,0,0)}
+function tick(now){raf=requestAnimationFrame(tick);if(now-lastDraw<66)return;lastDraw=now;frame((now-t0)/1000)}
+function start(){cancelAnimationFrame(raf);build();frame(0);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)raf=requestAnimationFrame(tick)}
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{if(Math.ceil(hero.getBoundingClientRect().width/S)!==W||Math.ceil(hero.getBoundingClientRect().height/S)!==H)start()},120)}).observe(hero);
+start();
+})();
+
+</script></body></html>
