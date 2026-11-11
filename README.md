@@ -6,8 +6,6 @@ TheFilterLab lets you experiment with a machine-vision workflow in your browser:
 
 It is designed for learning, prototyping and understanding classical image processing techniques used in industrial inspection. It is not a replacement for a calibrated production vision system.
 
-<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/4e466109-a848-40d5-8c50-3d8c66aab877" /># TheFilterLab
-
 
 ## What can you do?
 
@@ -20,6 +18,8 @@ It is designed for learning, prototyping and understanding classical image proce
 - **Count bright connected regions:** enable blob counting and set a minimum area.
 - **Save and reload experiments:** copy a JSON recipe containing the pipeline, parameters, ROI, noise level and view settings, then paste it back later.
 - **Get a starting point:** choose a part/inspection scenario to see suggested filters and lighting guidance.
+
+<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/4e466109-a848-40d5-8c50-3d8c66aab877" /># TheFilterLab
 
 
 ## Filter library
@@ -42,6 +42,7 @@ Filters are grouped by the kind of image-processing task they support. You can s
 
 **Tip:** filter order matters. For example, smoothing before edge detection can reduce noise, while colour-based filters generally need to be placed before a step that converts the image to grayscale. The app displays a warning when a colour-dependent step is placed after grayscale processing.
 
+
 ## Inspection scenarios and suggested recipes
 
 The part selector provides example workflows and lighting tips for:
@@ -58,6 +59,7 @@ The part selector provides example workflows and lighting tips for:
 - Noisy or dim scenes
 
 These recipes are starting points, not guaranteed inspection settings. Real results depend on the camera, lens, lighting, exposure, surface finish and part variation.
+
 
 ## How to use the app
 
