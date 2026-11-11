@@ -1,10 +1,13 @@
-# TheFilterLab
+<img width="288" height="82" alt="image" src="https://github.com/user-attachments/assets/a4623d11-a302-4d0a-98ef-9bafefbdeba0" />
 
 **An interactive image-processing and machine-vision playground for exploring how filters change an image.**
 
 TheFilterLab lets you experiment with a machine-vision workflow in your browser: choose an image, select a part or inspection scenario, mark a region of interest, build a sequence of image-processing filters, and compare the original with the processed result.
 
 It is designed for learning, prototyping and understanding classical image processing techniques used in industrial inspection. It is not a replacement for a calibrated production vision system.
+
+<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/4e466109-a848-40d5-8c50-3d8c66aab877" /># TheFilterLab
+
 
 ## What can you do?
 
@@ -17,6 +20,9 @@ It is designed for learning, prototyping and understanding classical image proce
 - **Count bright connected regions:** enable blob counting and set a minimum area.
 - **Save and reload experiments:** copy a JSON recipe containing the pipeline, parameters, ROI, noise level and view settings, then paste it back later.
 - **Get a starting point:** choose a part/inspection scenario to see suggested filters and lighting guidance.
+
+<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/39eb1adb-0627-464e-ab19-880be8b6cac6" />
+
 
 ## Filter library
 
@@ -33,6 +39,8 @@ Filters are grouped by the kind of image-processing task they support. You can s
 | Colour | Isolate colours and inspect channels | Hue isolate, Channel select, Saturation map, Colour distance |
 | Texture | Highlight surface variation and fine detail | Texture (local variance), High-pass |
 | Defects | Highlight line defects and local surface changes | Scratch / crack detector, Paint damage / local anomaly, Hysteresis threshold, Remove small specks, Highlight on original |
+
+<img width="563" height="822" alt="image" src="https://github.com/user-attachments/assets/6ea1973a-1a38-4f59-b3dd-0a614b374aff" />
 
 **Tip:** filter order matters. For example, smoothing before edge detection can reduce noise, while colour-based filters generally need to be placed before a step that converts the image to grayscale. The app displays a warning when a colour-dependent step is placed after grayscale processing.
 
