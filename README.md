@@ -21,8 +21,6 @@ It is designed for learning, prototyping and understanding classical image proce
 - **Save and reload experiments:** copy a JSON recipe containing the pipeline, parameters, ROI, noise level and view settings, then paste it back later.
 - **Get a starting point:** choose a part/inspection scenario to see suggested filters and lighting guidance.
 
-<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/39eb1adb-0627-464e-ab19-880be8b6cac6" />
-
 
 ## Filter library
 
