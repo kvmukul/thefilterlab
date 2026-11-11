@@ -19,8 +19,7 @@ It is designed for learning, prototyping and understanding classical image proce
 - **Save and reload experiments:** copy a JSON recipe containing the pipeline, parameters, ROI, noise level and view settings, then paste it back later.
 - **Get a starting point:** choose a part/inspection scenario to see suggested filters and lighting guidance.
 
-<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/4e466109-a848-40d5-8c50-3d8c66aab877" /># TheFilterLab
-
+<img width="1528" height="925" alt="image" src="https://github.com/user-attachments/assets/4e466109-a848-40d5-8c50-3d8c66aab877" />
 
 ## Filter library
 
@@ -38,7 +37,7 @@ Filters are grouped by the kind of image-processing task they support. You can s
 | Texture | Highlight surface variation and fine detail | Texture (local variance), High-pass |
 | Defects | Highlight line defects and local surface changes | Scratch / crack detector, Paint damage / local anomaly, Hysteresis threshold, Remove small specks, Highlight on original |
 
-<img width="563" height="822" alt="image" src="https://github.com/user-attachments/assets/6ea1973a-1a38-4f59-b3dd-0a614b374aff" />
+<img width="568" height="824" alt="image" src="https://github.com/user-attachments/assets/a2fbff1c-a90f-4cb3-9236-75e46d65d100" />
 
 **Tip:** filter order matters. For example, smoothing before edge detection can reduce noise, while colour-based filters generally need to be placed before a step that converts the image to grayscale. The app displays a warning when a colour-dependent step is placed after grayscale processing.
 
